@@ -19,11 +19,19 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
     
+    let memeTextAttributes: [NSAttributedString.Key: Any] = [
+        .font : UIFont.systemFont(ofSize: 40, weight: .bold),
+        .foregroundColor : UIColor.white,
+        .strokeColor : UIColor.black,
+        .strokeWidth : NSNumber(value: -4 as Float)
+    ]
+
     // MARK: ViewController Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureTextFields()
+        configureMemeTextField(textField: topTextField)
+        configureMemeTextField(textField: bottomTextField)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,21 +80,10 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     // MARK: UI Helper Methods
     
-    func configureTextFields() {
-        let textAttributes: [NSAttributedString.Key: Any] = [
-            .font : UIFont.systemFont(ofSize: 40, weight: .bold),
-            .foregroundColor : UIColor.white,
-            .strokeColor : UIColor.black,
-            .strokeWidth : NSNumber(value: -4 as Float)
-        ]
-        
-        topTextField.defaultTextAttributes = textAttributes
-        topTextField.textAlignment = .center
-        topTextField.delegate = self
-        
-        bottomTextField.defaultTextAttributes = textAttributes
-        bottomTextField.textAlignment = .center
-        bottomTextField.delegate = self
+    func configureMemeTextField(textField: UITextField) {
+        textField.delegate = self
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textAlignment = .center
     }
     
     func updateUI() {
@@ -105,13 +102,9 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         bottomTextField.isHidden = !isImageSelected
     }
     
-    func updateUI(isGeneratingMeme: Bool) {
-        topToolbar.isHidden = isGeneratingMeme
-        bottomToolbar.isHidden = isGeneratingMeme
-        
-        let borderStyle = isGeneratingMeme ? UITextField.BorderStyle.none : UITextField.BorderStyle.roundedRect
-        topTextField.borderStyle = borderStyle
-        bottomTextField.borderStyle = borderStyle
+    func showToolbars(_ showToolbars: Bool) {
+        topToolbar.isHidden = !showToolbars
+        bottomToolbar.isHidden = !showToolbars
     }
     
     func resetUI() {
@@ -121,7 +114,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     
     func generateMemedImage() -> UIImage {
 
-        updateUI(isGeneratingMeme: true)
+        showToolbars(false)
         
         // Render view to an image
         UIGraphicsBeginImageContext(view.frame.size)
@@ -129,7 +122,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
 
-        updateUI(isGeneratingMeme: false)
+        showToolbars(true)
         
         return memedImage
     }
