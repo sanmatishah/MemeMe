@@ -52,10 +52,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
         activityViewController.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
             if completed {
-                let meme = MemeModel(topText: self.topTextField.text,
-                                     bottomText: self.bottomTextField.text,
-                                     originalImage: self.imagePickerView.image,
-                                     memedImage: memedImage)
+                self.saveMeme(memedImage)
                 self.resetUI()
             }
         }
@@ -110,6 +107,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     func resetUI() {
         imagePickerView.image = nil
         updateUI()
+        dismiss(animated: true, completion: nil)
     }
     
     func generateMemedImage() -> UIImage {
@@ -125,6 +123,14 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         showToolbars(true)
         
         return memedImage
+    }
+    
+    func saveMeme(_ memedImage: UIImage) {
+        let meme = MemeModel(topText: self.topTextField.text,
+                             bottomText: self.bottomTextField.text,
+                             originalImage: self.imagePickerView.image,
+                             memedImage: memedImage)
+        (UIApplication.shared.delegate as! AppDelegate).memes.append(meme)
     }
     
     // MARK: UIImagePickerControllerDelegate
